@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { executeAction } from '@/lib/actions/executor';
 import { UIAction } from "@/lib/actions/schema";
@@ -6,33 +6,42 @@ import { UIAction } from "@/lib/actions/schema";
 export function useProjectChat() {
     const { messages, addMessage, updateMessage, setIsLoading, mode, interviewMode } = useAppStore();
     const processedMessageIds = useRef<Set<string>>(new Set());
+    const isFetching = useRef(false); // Prevent double-fetch
 
     useEffect(() => {
         const lastMessage = messages[messages.length - 1];
         const isInterviewStart = interviewMode && messages.length === 0 && mode === 'app';
 
-        // Trigger if:
-        // 1. User just sent a message (standard flow)
-        // 2. We just entered Interview Mode with no messages (AI starts)
-        const shouldTrigger = (lastMessage?.role === 'user' && !processedMessageIds.current.has(lastMessage.id)) ||
-            (isInterviewStart && !processedMessageIds.current.has('interview-start'));
+        // Determine if we should trigger
+        const shouldTriggerForUser = lastMessage?.role === 'user' && !processedMessageIds.current.has(lastMessage.id);
+        const shouldTriggerForInterview = isInterviewStart && !processedMessageIds.current.has('interview-start');
 
-        if (!shouldTrigger) {
+        if (!shouldTriggerForUser && !shouldTriggerForInterview) {
+            return;
+        }
+
+        // Mark as processed IMMEDIATELY to prevent double-execution
+        if (shouldTriggerForUser && lastMessage) {
+            processedMessageIds.current.add(lastMessage.id);
+        }
+        if (shouldTriggerForInterview) {
+            processedMessageIds.current.add('interview-start');
+        }
+
+        // Prevent simultaneous fetches
+        if (isFetching.current) {
             return;
         }
 
         const fetchResponse = async () => {
+            isFetching.current = true;
             setIsLoading(true);
 
-            if (lastMessage?.role === 'user') {
-                processedMessageIds.current.add(lastMessage.id);
-            } else if (isInterviewStart) {
-                processedMessageIds.current.add('interview-start');
-            }
+            // Create placeholder BEFORE any async work
+            const assistantMsgId = `assistant-${Date.now()}`;
 
             try {
                 // Add placeholder assistant message
-                const assistantMsgId = Date.now().toString();
                 addMessage({
                     id: assistantMsgId,
                     role: 'assistant',
@@ -40,23 +49,32 @@ export function useProjectChat() {
                     timestamp: Date.now()
                 });
 
+                // Build the messages to send
+                const messagesToSend = shouldTriggerForInterview
+                    ? [{ role: 'user' as const, content: '[INTERVIEW_START] The user clicked "Tailor to you". Begin the interview by introducing yourself briefly as Rob\'s AI clone and asking an open-ended question to understand their goals (hiring, exploring, investing, etc.).' }]
+                    : messages.map(m => ({ role: m.role, content: m.content }));
+
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        // For interview mode start, send a synthetic message to prompt the AI
-                        messages: isInterviewStart && messages.length === 0
-                            ? [{ role: 'user', content: '[INTERVIEW_START] The user has clicked "Tailor to you". Begin the interview by introducing yourself and asking an open-ended question to understand their goals.' }]
-                            : messages.map(m => ({ role: m.role, content: m.content })),
+                        messages: messagesToSend,
                         interviewMode
                     })
                 });
 
-                if (!response.body) return;
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}: ${response.statusText}`);
+                }
+
+                if (!response.body) {
+                    throw new Error("No response body");
+                }
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
                 let buffer = "";
+                let receivedFinal = false;
 
                 while (true) {
                     const { done, value } = await reader.read();
@@ -80,29 +98,41 @@ export function useProjectChat() {
                             }
 
                             if (event.type === 'final') {
-                                // Final Answer Received
+                                receivedFinal = true;
                                 const parsed = event.content;
-                                updateMessage(assistantMsgId, parsed.assistant_message, parsed.ui_actions);
 
-                                if (parsed.ui_actions && Array.isArray(parsed.ui_actions)) {
-                                    parsed.ui_actions.forEach((action: UIAction) => {
+                                // Safely extract message
+                                const messageContent = parsed?.assistant_message || parsed?.message || "I received your message but couldn't generate a proper response.";
+                                const actions = parsed?.ui_actions || [];
+
+                                updateMessage(assistantMsgId, messageContent, actions);
+
+                                if (actions && Array.isArray(actions)) {
+                                    actions.forEach((action: UIAction) => {
                                         executeAction(action);
                                     });
                                 }
                             }
                         } catch (e) {
-                            console.error("Stream Parse Error", line);
+                            console.error("Stream Parse Error", line, e);
                         }
                     }
                 }
-            } catch (error) {
-                console.error("Chat Error", error);
-                // Update the last message with an error if we have one
-                const lastMsg = useAppStore.getState().messages[useAppStore.getState().messages.length - 1];
-                if (lastMsg && lastMsg.role === 'assistant' && !lastMsg.content) {
-                    updateMessage(lastMsg.id, "Sorry, I encountered an error connecting to the AI. Please try again.", []);
+
+                // If we never received a final event, show an error
+                if (!receivedFinal) {
+                    const currentMsg = useAppStore.getState().messages.find(m => m.id === assistantMsgId);
+                    if (currentMsg && !currentMsg.content) {
+                        updateMessage(assistantMsgId, "I didn't receive a complete response. Please try again.", []);
+                    }
                 }
+
+            } catch (error: any) {
+                console.error("Chat Error", error);
+                // Update the placeholder message with error
+                updateMessage(assistantMsgId, `Sorry, I encountered an error: ${error.message || "Unknown error"}. Please try again.`, []);
             } finally {
+                isFetching.current = false;
                 setIsLoading(false);
                 useAppStore.getState().setThought(""); // Clear thought
             }
