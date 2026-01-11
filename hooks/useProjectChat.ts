@@ -28,13 +28,13 @@ export function useProjectChat() {
             processedMessageIds.current.add('interview-start');
         }
 
-        // Prevent simultaneous fetches
+        // Prevent simultaneous fetches - set flag IMMEDIATELY before any async work
         if (isFetching.current) {
             return;
         }
+        isFetching.current = true; // Set BEFORE defining async function
 
         const fetchResponse = async () => {
-            isFetching.current = true;
             setIsLoading(true);
 
             // Create placeholder BEFORE any async work
