@@ -93,10 +93,24 @@ export async function POST(req: Request) {
                         response_format: { type: "json_object" },
                     });
 
-                    // Send final result
+                    // Send final result with safe JSON parsing
                     const content = finalRes.choices[0].message.content;
                     if (content) {
-                        sendEvent(controller, { type: "final", content: JSON.parse(content) });
+                        try {
+                            sendEvent(controller, { type: "final", content: JSON.parse(content) });
+                        } catch (parseError) {
+                            console.error("JSON Parse Error:", parseError, "Raw content:", content);
+                            // Fallback: wrap raw text as assistant_message
+                            sendEvent(controller, {
+                                type: "final",
+                                content: { assistant_message: content, ui_actions: [] }
+                            });
+                        }
+                    } else {
+                        sendEvent(controller, {
+                            type: "final",
+                            content: { assistant_message: "I didn't get a response. Please try again.", ui_actions: [] }
+                        });
                     }
                     controller.close();
                     return;
@@ -176,13 +190,34 @@ export async function POST(req: Request) {
 
                 const content = finalRes.choices[0].message.content;
                 if (content) {
-                    sendEvent(controller, { type: "final", content: JSON.parse(content) });
+                    try {
+                        sendEvent(controller, { type: "final", content: JSON.parse(content) });
+                    } catch (parseError) {
+                        console.error("JSON Parse Error:", parseError, "Raw content:", content);
+                        sendEvent(controller, {
+                            type: "final",
+                            content: { assistant_message: content, ui_actions: [] }
+                        });
+                    }
+                } else {
+                    sendEvent(controller, {
+                        type: "final",
+                        content: { assistant_message: "I didn't get a response. Please try again.", ui_actions: [] }
+                    });
                 }
 
                 controller.close();
 
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Stream Error", error);
+                // Send error to frontend so the user sees a message
+                sendEvent(controller, {
+                    type: "final",
+                    content: {
+                        assistant_message: `Sorry, I encountered an error: ${error.message || "Unknown error occurred"}. Please try again.`,
+                        ui_actions: []
+                    }
+                });
                 controller.close();
             }
         },
