@@ -21,6 +21,7 @@ build/
 # Ops
 .env
 .env*.local
+python-backend/service-account.json
 
 # Debug
 npm-debug.log*

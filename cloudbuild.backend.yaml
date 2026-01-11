@@ -22,3 +22,6 @@ steps:
 
 images:
   - 'gcr.io/$PROJECT_ID/archive-service:$COMMIT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
