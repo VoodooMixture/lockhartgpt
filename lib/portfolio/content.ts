@@ -109,7 +109,8 @@ This background ensures that every line of code I write generates business value
 
 ## Tools
 *   **Visual**: Tableau, Photoshop, Illustrator
-*   **Cloud**: AWS (EC2, S3, Lambda)
+*   **Cloud**: Google Cloud (Cloud Run, Vertex AI, Cloud Build), AWS
+*   **Architecture**: Serverless, Docker/Containerization, Microservices
 *   **Productivity**: Excel (Expert), Jira, Notion
 `,
     "Automation_Agent.case": `# Case Study: AI Automation
