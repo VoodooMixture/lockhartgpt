@@ -44,7 +44,10 @@ export function useProjectChat() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        messages: messages.map(m => ({ role: m.role, content: m.content })),
+                        // For interview mode start, send a synthetic message to prompt the AI
+                        messages: isInterviewStart && messages.length === 0
+                            ? [{ role: 'user', content: '[INTERVIEW_START] The user has clicked "Tailor to you". Begin the interview by introducing yourself and asking an open-ended question to understand their goals.' }]
+                            : messages.map(m => ({ role: m.role, content: m.content })),
                         interviewMode
                     })
                 });
@@ -94,6 +97,11 @@ export function useProjectChat() {
                 }
             } catch (error) {
                 console.error("Chat Error", error);
+                // Update the last message with an error if we have one
+                const lastMsg = useAppStore.getState().messages[useAppStore.getState().messages.length - 1];
+                if (lastMsg && lastMsg.role === 'assistant' && !lastMsg.content) {
+                    updateMessage(lastMsg.id, "Sorry, I encountered an error connecting to the AI. Please try again.", []);
+                }
             } finally {
                 setIsLoading(false);
                 useAppStore.getState().setThought(""); // Clear thought
