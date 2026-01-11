@@ -66,6 +66,22 @@ export function ChatPane() {
                 {messages
                     // Filter out empty assistant messages when loading (they're placeholders)
                     .filter(m => !(m.role === 'assistant' && !m.content && isLoading))
+                    // Deduplicate: remove consecutive assistant messages (keep only the last one with content)
+                    .filter((m, i, arr) => {
+                        // Keep all user messages
+                        if (m.role === 'user') return true;
+                        // Keep assistant messages with content
+                        if (m.role === 'assistant' && m.content) {
+                            // But skip if the next message is also an assistant with the same content
+                            const next = arr[i + 1];
+                            if (next?.role === 'assistant' && next.content === m.content) {
+                                return false;
+                            }
+                            return true;
+                        }
+                        // Skip empty assistant messages
+                        return false;
+                    })
                     .map((m) => (
                         <div key={m.id} className={cn("flex flex-col gap-1 max-w-[90%]", m.role === 'user' ? "ml-auto items-end" : "items-start")}>
                             <div className={cn("text-[10px] text-muted-foreground px-1", m.role === 'user' ? "text-right" : "text-left")}>
