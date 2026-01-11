@@ -126,7 +126,7 @@ export function ChatPane() {
             </div>
 
             {/* Input Area */}
-            <div className="p-4 bg-background/50 backdrop-blur-sm border-t border-border/40">
+            <div className="p-4 pb-2 md:pb-4 bg-background/50 backdrop-blur-sm border-t border-border/40">
                 <div className="relative shadow-sm rounded-xl overflow-hidden bg-card border border-border/50 focus-within:ring-1 focus-within:ring-ring transition-all">
                     <Input
                         value={input}
