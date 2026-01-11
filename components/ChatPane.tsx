@@ -63,57 +63,60 @@ export function ChatPane() {
                         <p className="text-sm">Start the conversation...</p>
                     </div>
                 )}
-                {messages.map((m) => (
-                    <div key={m.id} className={cn("flex flex-col gap-1 max-w-[90%]", m.role === 'user' ? "ml-auto items-end" : "items-start")}>
-                        <div className={cn("text-[10px] text-muted-foreground px-1", m.role === 'user' ? "text-right" : "text-left")}>
-                            {m.role === 'user' ? "You" : "LockhartGPT"}
-                        </div>
-                        <div
-                            className={cn(
-                                "rounded-2xl px-4 py-3 text-sm shadow-sm leading-relaxed max-w-full",
-                                m.role === 'user'
-                                    ? "bg-white text-zinc-900 font-medium rounded-tr-sm"
-                                    : "bg-card border border-border/50 text-foreground rounded-tl-sm w-full"
-                            )}
-                        >
-                            <div className={cn("prose prose-sm max-w-none prose-p:leading-relaxed prose-li:my-0.5", m.role === 'user' ? "prose-p:text-zinc-900 prose-headings:text-zinc-900 prose-strong:text-zinc-900" : "prose-invert")}>
-                                <Markdown>
-                                    {m.content}
-                                </Markdown>
+                {messages
+                    // Filter out empty assistant messages when loading (they're placeholders)
+                    .filter(m => !(m.role === 'assistant' && !m.content && isLoading))
+                    .map((m) => (
+                        <div key={m.id} className={cn("flex flex-col gap-1 max-w-[90%]", m.role === 'user' ? "ml-auto items-end" : "items-start")}>
+                            <div className={cn("text-[10px] text-muted-foreground px-1", m.role === 'user' ? "text-right" : "text-left")}>
+                                {m.role === 'user' ? "You" : "LockhartGPT"}
                             </div>
-
-                            {/* Citation / Action Cards */}
-                            {m.actions && m.actions.length > 0 && (
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                    {m.actions.map((action, i) => {
-                                        if (action.type === 'open_file') {
-                                            return (
-                                                <div
-                                                    key={i}
-                                                    className="flex items-center gap-2 bg-secondary/50 hover:bg-secondary/80 border border-border/50 rounded-lg px-3 py-2 cursor-pointer transition-colors"
-                                                    onClick={() => {
-                                                        useAppStore.getState().setActiveTab(action.path);
-                                                        useAppStore.getState().setLayout('split');
-                                                    }}
-                                                >
-                                                    <div className="h-8 w-8 rounded bg-background flex items-center justify-center border border-border/30">
-                                                        <span className="text-xs">📄</span>
-                                                    </div>
-                                                    <div className="flex flex-col text-left">
-                                                        <span className="text-xs font-medium text-foreground">{action.path}</span>
-                                                        <span className="text-[10px] text-muted-foreground">Click to view</span>
-                                                    </div>
-                                                </div>
-                                            );
-                                        }
-                                        return null;
-                                    })}
+                            <div
+                                className={cn(
+                                    "rounded-2xl px-4 py-3 text-sm shadow-sm leading-relaxed max-w-full",
+                                    m.role === 'user'
+                                        ? "bg-white text-zinc-900 font-medium rounded-tr-sm"
+                                        : "bg-card border border-border/50 text-foreground rounded-tl-sm w-full"
+                                )}
+                            >
+                                <div className={cn("prose prose-sm max-w-none prose-p:leading-relaxed prose-li:my-0.5", m.role === 'user' ? "prose-p:text-zinc-900 prose-headings:text-zinc-900 prose-strong:text-zinc-900" : "prose-invert")}>
+                                    <Markdown>
+                                        {m.content}
+                                    </Markdown>
                                 </div>
-                            )}
+
+                                {/* Citation / Action Cards */}
+                                {m.actions && m.actions.length > 0 && (
+                                    <div className="mt-3 flex flex-wrap gap-2">
+                                        {m.actions.map((action, i) => {
+                                            if (action.type === 'open_file') {
+                                                return (
+                                                    <div
+                                                        key={i}
+                                                        className="flex items-center gap-2 bg-secondary/50 hover:bg-secondary/80 border border-border/50 rounded-lg px-3 py-2 cursor-pointer transition-colors"
+                                                        onClick={() => {
+                                                            useAppStore.getState().setActiveTab(action.path);
+                                                            useAppStore.getState().setLayout('split');
+                                                        }}
+                                                    >
+                                                        <div className="h-8 w-8 rounded bg-background flex items-center justify-center border border-border/30">
+                                                            <span className="text-xs">📄</span>
+                                                        </div>
+                                                        <div className="flex flex-col text-left">
+                                                            <span className="text-xs font-medium text-foreground">{action.path}</span>
+                                                            <span className="text-[10px] text-muted-foreground">Click to view</span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        })}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))}
-                {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
+                    ))}
+                {isLoading && (
                     <div className="flex flex-col gap-1 items-start max-w-[90%]">
                         <div className="text-[10px] text-muted-foreground px-1">LockhartGPT</div>
                         <div className="bg-card border border-border/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-2">
