@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+python-multipart
+langchain
+langchain-google-vertexai
+langchain-community
+google-cloud-aiplatform
+pypdf
+faiss-cpu
+python-dotenv
+supabase
+docx2txt
+openpyxl
+python-pptx
+unstructured
