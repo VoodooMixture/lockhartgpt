@@ -22,6 +22,8 @@ export function useProjectChat() {
 
         // Mark as processed IMMEDIATELY to prevent double-execution
         if (shouldTriggerForUser && lastMessage) {
+            // Extra safety: Check if we've already processed this ID in this run
+            if (processedMessageIds.current.has(lastMessage.id)) return;
             processedMessageIds.current.add(lastMessage.id);
         }
         if (shouldTriggerForInterview) {

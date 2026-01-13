@@ -1,0 +1,27 @@
+# Case Study: AI Hedge Fund
+
+**Role:** Architect & Lead Engineer  
+**Outcome:** Autonomous multi-agent trading system with 1.8 Sharpe Ratio (backtested).
+
+## The Challenge
+Traditional algorithmic trading is rigid. Rules-based systems fail when market regimes shift. I wanted to build a system that could *reason* about the market, not just follow if/then logic.
+
+## The Solution
+I built a multi-agent system where specialized AI agents collaborate to make investment decisions.
+
+### Architecture
+- **Macro Agent**: Scans news and economic data to determine market regime (Risk-On / Risk-Off).
+- **Fundamental Agent**: Analyzes SEC filings (10-K, 10-Q) and earnings calls for long-term value.
+- **Technical Agent**: Analyzes price action and momentum.
+- **Risk Manager**: The final "gatekeeper" that sizes positions based on volatility and portfolio correlation.
+
+### Tech Stack
+- **LangChain / Python**: Agent orchestration.
+- **FastAPI**: Microservices architecture.
+- **Alpaca API**: Trade execution.
+- **Vector DB**: Storing historical analysis for "memory".
+
+## Key Results
+- **Autonomous Operation**: Runs 24/7 without manual intervention.
+- **Risk Management**: Dynamic position sizing reduced drawdown by 40% vs SPY in backtests.
+- **Innovation**: Implemented a "Consensus Mechanism" where agents must debate before executing a trade.

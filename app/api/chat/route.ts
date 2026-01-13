@@ -83,8 +83,31 @@ export async function POST(req: Request) {
 
                 const firstMsg = firstRunner.choices[0].message;
 
-                // If no tool calls, simulate final stream right away
-                if (!firstMsg.tool_calls || firstMsg.tool_calls.length === 0) {
+                // 3. Check for Tool Calls OR Valid JSON Response
+                const hasToolCalls = firstMsg.tool_calls && firstMsg.tool_calls.length > 0;
+                let hasValidJSON = false;
+
+                if (!hasToolCalls && firstMsg.content) {
+                    try {
+                        const parsed = JSON.parse(firstMsg.content);
+                        if (parsed.assistant_message || parsed.ui_actions) {
+                            hasValidJSON = true;
+                        }
+                    } catch (e) {
+                        // Not JSON, continue to second pass
+                    }
+                }
+
+                // If no tools and no valid JSON, or if we have valid JSON we can return immediately
+                if (!hasToolCalls) {
+                    if (hasValidJSON) {
+                        // Perfect! We got what we wanted in the first pass.
+                        sendEvent(controller, { type: "final", content: JSON.parse(firstMsg.content!) });
+                        controller.close();
+                        return;
+                    }
+
+                    // Otherwise, force a second pass to get JSON
                     sendEvent(controller, { type: "thought", content: "Generating Response..." });
 
                     const finalRes = await openai.chat.completions.create({
