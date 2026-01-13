@@ -124,5 +124,36 @@ Building autonomous agents that can:
 3.  **Execute**: Write code, run tests, and deploy software.
 
 This portfolio itself is a testament to that capability, acting as a virtual clone that can reason about my own history.
+`,
+
+    "AI_Hedge_Fund.case": `# Case Study: Lockhart Holdings (AI Hedge Fund)
+**Role**: Architect & Lead Engineer
+**Status**: Live Paper Trading / Cloud Run Deployment
+
+**An institutional-grade investment system where AI agents research, debate, and execute trades under strict risk constraints.**
+
+## The "Why"
+LLMs are great at reasoning but terrible at math and risk. Standalone "finance bots" hallucinate numbers and blow up accounts.
+**My Solution: Architectural Separation.**
+By decoupling the "Creative" layer (Analysts/PMs generating ideas) from the "Constraint" layer (Risk/Execution enforcing limits), I built a system that allows AI to be imaginative without being dangerous.
+
+## Key Capabilities
+*   **Deep Research**: Autonomously investigates tickers using Gemini to browse and write multi-page reports.
+*   **Adversarial Debates**: Before any trade, "Bull", "Bear", and "Skeptic" agents debate the thesis to identify blind spots.
+*   **Market Neutrality**: Automatically constructs delta-neutral methodologies using pairs trading and option hedges (VIXY/TLT).
+*   **Alternative Data**: Ingests Insider Trading, Congress trading, and FinBERT sentiment analysis.
+*   **Deterministic Guardrails**: Hard-coded circuit breakers and exposure limits that LLMs cannot override.
+
+## System Architecture
+A "Fund of Funds" architecture where specialized agents compete for capital:
+*   **Idea Generation**: Macro Agents, Deep Research (Web), Alt Data (Insider/13F).
+*   **Decision Layer**: Specialized PMs (Value, Momentum) -> Debate Room -> CIO Agent.
+*   **Governance**: Risk Manager (Deterministic Python) -> Execution Trader (Algo).
+
+## Tech Stack
+*   **Core**: Python 3.11, FastAPI, LangChain, Pydantic
+*   **AI**: OpenAI (GPT-4o), Google Gemini (Interactions), FinBERT (Sentiment)
+*   **Data**: Alpaca Markets, EDGAR Tools (SEC), QuiverQuant, GS Quant
+*   **Infra**: Docker, Google Cloud Run, Cloud Build (CI/CD)
 `
 };
