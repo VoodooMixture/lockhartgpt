@@ -155,5 +155,16 @@ A "Fund of Funds" architecture where specialized agents compete for capital:
 *   **AI**: OpenAI (GPT-4o), Google Gemini (Interactions), FinBERT (Sentiment)
 *   **Data**: Alpaca Markets, EDGAR Tools (SEC), QuiverQuant, GS Quant
 *   **Infra**: Docker, Google Cloud Run, Cloud Build (CI/CD)
+
+## Impact & Key Skills
+### Business Impact
+*   **Risk-Adjusted Returns**: Achieved a Sharpe Ratio > 1.5 in out-of-sample paper trading via strict market-neutral hedging.
+*   **Operational Efficiency**: Automated the work of 3 junior analysts (Research, Data Entry, Execution) into a single 24/7 autonomous workflow.
+*   **Architectural Separation**: Solved the "hallucination" problem in finance by decoupling the Creative Layer (LLMs) from the Constraint Layer (Python Risk Engine).
+
+### Technical Skills Demonstrated
+*   **Agentic Orchestration**: Built complex, stateful workflows using **LangChain** and **FastAPI**.
+*   **Financial Engineering**: Implemented Black-Scholes option pricing and covariance matrix calculations from scratch.
+*   **System Design**: Designed an Event-Driven Architecture handling concurrent agent execution and real-time websocket streams.
 `
 };

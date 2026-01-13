@@ -39,8 +39,8 @@ export default function LandingView() {
 
     const SUGGESTIONS = [
         "How did you cut OpEx by 40% at Fathom?",
-        "Show me your financial modeling work.",
-        "How does your AI automation stack work?",
+        "How do you control AI hallucination in trading?",
+        "Explain the risk architecture of your hedge fund.",
         "Tell me about bootstrapping Top Hat to $1M.",
     ];
 
