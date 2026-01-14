@@ -7,6 +7,7 @@ export function useProjectChat() {
     const { messages, addMessage, updateMessage, setIsLoading, mode, interviewMode } = useAppStore();
     const processedMessageIds = useRef<Set<string>>(new Set());
     const isFetching = useRef(false); // Prevent double-fetch
+    const lastProcessedCount = useRef(0); // Track last processed message count
 
     useEffect(() => {
         const lastMessage = messages[messages.length - 1];
@@ -29,6 +30,13 @@ export function useProjectChat() {
         if (shouldTriggerForInterview) {
             processedMessageIds.current.add('interview-start');
         }
+
+        // Additional guard: Check if we've already processed this message count
+        const currentCount = messages.length;
+        if (currentCount === lastProcessedCount.current && !isInterviewStart) {
+            return;
+        }
+        lastProcessedCount.current = currentCount;
 
         // Prevent simultaneous fetches - set flag IMMEDIATELY before any async work
         if (isFetching.current) {
