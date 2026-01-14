@@ -16,12 +16,19 @@ I built a multi-agent system where specialized AI agents collaborate to make inv
 - **Risk Manager**: The final "gatekeeper" that sizes positions based on volatility and portfolio correlation.
 
 ### Tech Stack
-- **LangChain / Python**: Agent orchestration.
-- **FastAPI**: Microservices architecture.
-- **Alpaca API**: Trade execution.
-- **Vector DB**: Storing historical analysis for "memory".
+- **NLP/ML**: FinBERT (Sentiment Analysis), Sklearn (Feature Engineering), PyTorch (Model Inference)
+- **LLM Orchestration**: LangChain, OpenAI GPT-4o, Google Gemini
+- **Vector DB**: pgvector for semantic search and agent "memory"
+- **Backend**: Python 3.11, FastAPI, Pydantic
+- **Execution**: Alpaca Markets API
+
+### NLP Pipeline
+- **Text Classification**: SEC filings categorized by risk factors and sentiment
+- **Sentiment Analysis**: FinBERT-based scoring of earnings calls and news
+- **Semantic Search**: RAG architecture using pgvector for contextual research retrieval
 
 ## Key Results
 - **Autonomous Operation**: Runs 24/7 without manual intervention.
 - **Risk Management**: Dynamic position sizing reduced drawdown by 40% vs SPY in backtests.
 - **Innovation**: Implemented a "Consensus Mechanism" where agents must debate before executing a trade.
+

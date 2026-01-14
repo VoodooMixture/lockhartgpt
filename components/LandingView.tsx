@@ -38,10 +38,10 @@ export default function LandingView() {
     };
 
     const SUGGESTIONS = [
+        "What NLP techniques power your hedge fund?",
+        "How do you use vector databases for research?",
         "How did you cut OpEx by 40% at Fathom?",
         "How do you control AI hallucination in trading?",
-        "Explain the risk architecture of your hedge fund.",
-        "Tell me about bootstrapping Top Hat to $1M.",
     ];
 
     return (

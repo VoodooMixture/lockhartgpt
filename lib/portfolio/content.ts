@@ -112,6 +112,13 @@ This background ensures that every line of code I write generates business value
 *   **Cloud**: Google Cloud (Cloud Run, Vertex AI, Cloud Build), AWS
 *   **Architecture**: Serverless, Docker/Containerization, Microservices
 *   **Productivity**: Excel (Expert), Jira, Notion
+
+## NLP & Machine Learning
+*   **NLP Techniques**: Text Classification, Sentiment Analysis (FinBERT), Named Entity Recognition, Document Summarization
+*   **ML Frameworks**: Sklearn, PyTorch, TensorFlow/Keras, Hugging Face Transformers
+*   **LLM Tooling**: LangChain, LlamaIndex, OpenAI API, Google Gemini
+*   **Vector Databases**: pgvector (PostgreSQL), Pinecone (familiar)
+*   **Libraries**: Pandas, NumPy, Gensim, SpaCy, NLTK
 `,
     "Automation_Agent.case": `# Case Study: AI Automation
 **Role**: Architect
@@ -166,5 +173,28 @@ A "Fund of Funds" architecture where specialized agents compete for capital:
 *   **Agentic Orchestration**: Built complex, stateful workflows using **LangChain** and **FastAPI**.
 *   **Financial Engineering**: Implemented Black-Scholes option pricing and covariance matrix calculations from scratch.
 *   **System Design**: Designed an Event-Driven Architecture handling concurrent agent execution and real-time websocket streams.
+
+## NLP & Machine Learning Pipeline
+
+### Text Classification & Information Extraction
+*   **SEC Filing Analysis**: Custom NLP pipeline to extract sentiment, risk factors, and financial metrics from 10-K/10-Q filings using regex + LLM hybrid approach.
+*   **News Classification**: Multi-label classification of market news into sectors, sentiment, and relevance scores.
+
+### Sentiment Analysis
+*   **FinBERT Integration**: Fine-tuned BERT model for financial sentiment analysis on earnings calls and news headlines.
+*   **Hybrid Confidence Scoring**: FinBERT sentiment modulates trade confidence—high-uncertainty signals reduce position sizing rather than acting as hard filters.
+
+### Vector Database & Semantic Search
+*   **pgvector (PostgreSQL)**: Embedded historical research reports for semantic retrieval, enabling agents to "remember" past analysis on similar market conditions.
+*   **RAG Architecture**: Retrieval-Augmented Generation for grounding LLM responses in factual, timestamped research.
+
+### Agent Orchestration & Tooling
+*   **LangChain**: Multi-agent workflows with tool-calling, structured outputs, and conversation memory.
+*   **Pydantic**: Strict schema validation for all agent outputs—eliminates hallucinated JSON fields.
+
+### ML Frameworks Used
+*   **Sklearn**: Feature engineering, backtesting metrics (Sharpe, Sortino), clustering for regime detection.
+*   **PyTorch**: FinBERT inference, custom model fine-tuning potential.
+*   **TensorFlow/Keras**: Time-series forecasting experiments (LSTM-based).
 `
 };
